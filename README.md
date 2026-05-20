@@ -1,2 +1,2 @@
-# firebox
+# Firebox
 Firebase GUI
