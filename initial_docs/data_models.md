@@ -104,7 +104,7 @@ CREATE TABLE IF NOT EXISTS licensing_info (
     id INTEGER PRIMARY KEY DEFAULT 1,         -- Tek bir lisans olacağı için her zaman 1
     license_key VARCHAR NOT NULL,             -- Kullanıcının manuel girdiği lisans anahtarı
     registered_email VARCHAR,                 -- Lisansın bağlı olduğu e-posta adresi (Örn: stripe faturası e-postası)
-    license_type VARCHAR NOT NULL,            -- 'free', 'pro_monthly', 'pro_yearly', 'pro_lifetime', 'enterprise'
+    license_type VARCHAR NOT NULL,            -- 'trial', 'pro_monthly', 'pro_yearly', 'pro_lifetime', 'enterprise'
     license_status VARCHAR NOT NULL,          -- 'active', 'expired', 'canceled', 'revoked'
     activated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     expires_at TIMESTAMP,                     -- Abonelik bitiş tarihi (Lifetime lisanslarda NULL'dur)

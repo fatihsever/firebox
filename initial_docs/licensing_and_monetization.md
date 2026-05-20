@@ -11,20 +11,20 @@ Firebox, **"Sıfır Sunucu Maliyeti / Maksimum Güvenlik"** prensibine sadık ka
 Firebox, hem bireysel geliştiricileri hem de geniş yazılım ekiplerini (Enterprise) hedefleyen, esnek ödeme seçeneklerine sahip bir **SaaS (Software-as-a-Service)** modeliyle lisanslanır.
 
 ### 1.1. Fiyatlandırma Katmanları (Pricing Tiers)
-Uygulama, temel kullanım için sınırlı bir **Ücretsiz (Free)** katman ve tam profesyonel yetenekler sunan **Pro** / **Enterprise** katmanlarından oluşur.
+Uygulama, yeni kullanıcıların tüm özellikleri değerlendirebilmesi için **7 Günlük Ücretsiz Deneme (Trial)** süresi sunar. Bu süre dolduktan sonra uygulamanın tüm profesyonel yeteneklerinden faydalanabilmek için **Pro** veya **Enterprise** katmanlarından birinin lisans anahtarıyla etkinleştirilmesi gerekir.
 
-| Özellik | Ücretsiz (Free) | Pro (Bireysel) | Enterprise (Kurumsal) |
+| Özellik | 7 Günlük Deneme (Trial) | Pro (Bireysel) | Enterprise (Kurumsal) |
 | :--- | :--- | :--- | :--- |
-| **Fiyat** | $0 | $9 / Aylık veya $89 / Yıllık | Kişi başı $15 / Aylık veya Özel Teklif |
+| **Fiyat** | $0 (7 Günlük Deneme) | $9 / Aylık veya $89 / Yıllık | Kişi başı $15 / Aylık veya Özel Teklif |
 | **Ömür Boyu Seçeneği** | Yok | $199 (Tek Seferlik Ödeme) | Yok |
-| **Aktif Workspace Sınırı** | Maksimum 2 Proje | Sınırsız | Sınırsız |
-| **Firestore Görünümü** | Sadece Liste / Ağaç (Maks. 50 döküman) | Tablo, Ağaç, JSON (Sınırsız) | Tablo, Ağaç, JSON (Sınırsız) |
-| **JS Scripting Shell** | Kapalı | Açık | Açık |
-| **DuckDB Yerel Analiz & SQL** | Kapalı | Açık (Sınırsız) | Açık (Sınırsız) |
-| **Storage Transfer Kuyruğu** | Maks. 10MB dosya / Paralel transfer yok | Sınırsız / Sürükle-Bırak | Sınırsız / Sürükle-Bırak |
-| **Çapraz Platform Kullanımı** | Evet | Evet (Aynı lisans anahtarıyla 3 aktif cihaz) | Evet (Cihaz sınırı kurumsal belirlenir) |
+| **Aktif Workspace Sınırı** | Sınırsız (Deneme süresince) | Sınırsız | Sınırsız |
+| **Firestore Görünümü** | Tablo, Ağaç, JSON (Sınırsız) | Tablo, Ağaç, JSON (Sınırsız) | Tablo, Ağaç, JSON (Sınırsız) |
+| **JS Scripting Shell** | Açık (Deneme süresince) | Açık | Açık |
+| **DuckDB Yerel Analiz & SQL** | Açık (Sınırsız) | Açık (Sınırsız) | Açık (Sınırsız) |
+| **Storage Transfer Kuyruğu** | Sınırsız / Sürükle-Bırak | Sınırsız / Sürükle-Bırak | Sınırsız / Sürükle-Bırak |
+| **Çapraz Platform Kullanımı** | Evet (Yalnızca kurulan cihazda) | Evet (2 aktif cihaz: 1 Desktop, 1 Mobil) | Evet (Cihaz sınırı kurumsal belirlenir) |
 | **Toplu Lisanslama** | Yok | Yok | Evet (Çoklu koltuk kapasiteli tek bir lisans anahtarı) |
-| **Öncelikli Destek** | Yok | E-posta Desteği | 7/24 Slack / E-posta SLA |
+| **Öncelikli Destek** | E-posta Desteği | E-posta Desteği | 7/24 Slack / E-posta SLA |
 
 ---
 
@@ -126,7 +126,7 @@ CREATE TABLE IF NOT EXISTS licensing_info (
     id INTEGER PRIMARY KEY DEFAULT 1,            -- Tek bir lisans olacağı için sabit id (1) verilir
     license_key VARCHAR NOT NULL,                -- Kullanıcının manuel girdiği lisans anahtarı
     registered_email VARCHAR,                    -- Lisansın bağlı olduğu e-posta adresi
-    license_type VARCHAR NOT NULL,               -- 'free', 'pro_monthly', 'pro_yearly', 'pro_lifetime', 'enterprise'
+    license_type VARCHAR NOT NULL,               -- 'trial', 'pro_monthly', 'pro_yearly', 'pro_lifetime', 'enterprise'
     license_status VARCHAR NOT NULL,             -- 'active', 'expired', 'canceled', 'revoked'
     activated_at TIMESTAMP NOT NULL,             -- Cihazda etkinleştirilme tarihi
     expires_at TIMESTAMP,                        -- Lisans bitiş tarihi (Lifetime için null)
@@ -144,7 +144,7 @@ Geliştiricilerin internet bağlantısı olmayan ortamlarda (Örn: Uçakta, tün
 - **Doğrulama Algoritması**:
   - Uygulama açıldığında, DuckDB ve Secure Storage'dan `last_verified_at` tarihini ve JWT'yi okur.
   - Eğer `Şimdiki Zaman - last_verified_at < 7 Gün` ise, internet olmasa dahi JWT içerisindeki imza yerel olarak doğrulanarak kullanıcının premium özellikleri kullanmasına izin verilir.
-  - Eğer süre 7 günü aşmışsa ve internet bağlantısı yoksa, uygulama kullanıcıdan internete bağlanmasını ve lisansını doğrulatmasını ister. Özellikler geçici olarak "Free" moduna düşürülür.
+  - Eğer süre 7 günü aşmışsa ve internet bağlantısı yoksa, uygulama kullanıcıdan internete bağlanmasını ve lisansını doğrulatmasını ister. Lisans doğrulanamazsa, uygulama tüm özellikleri kilitler ve lisans anahtarı giriş ekranını gösterir.
 
 ---
 
@@ -161,13 +161,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dart_duckdb/dart_duckdb.dart';
 import 'package:http/http.dart' as http;
 
-enum LicenseType { free, proMonthly, proYearly, proLifetime, enterprise }
+enum LicenseType { trial, proMonthly, proYearly, proLifetime, enterprise }
 enum LicenseStatus { active, expired, canceled, revoked }
 
 class LicensingService {
   final FlutterSecureStorage _secureStorage;
   final Connection _dbConn;
-  final String _licensingApiUrl = "https://api.firebox.dev/v1/licensing";
+  final String _licensingApiUrl = "https://api.firebox.to/v1/licensing";
 
   LicensingService({
     required FlutterSecureStorage secureStorage,
@@ -179,9 +179,36 @@ class LicensingService {
     // 1. Secure Storage'dan JWT ve Lisans Anahtarını oku
     final jwt = await _secureStorage.read(key: "firebox_license_jwt");
     final licenseKey = await _secureStorage.read(key: "firebox_license_key");
-    
+    final trialStartDateStr = await _secureStorage.read(key: "firebox_trial_start_date");
+
+    // Eğer lisans girilmemişse, 7 günlük deneme süresini kontrol et
     if (jwt == null || licenseKey == null) {
-      return {"type": LicenseType.free, "status": LicenseStatus.expired};
+      if (trialStartDateStr == null) {
+        final nowStr = DateTime.now().toIso8601String();
+        await _secureStorage.write(key: "firebox_trial_start_date", value: nowStr);
+        return {
+          "type": LicenseType.trial,
+          "status": LicenseStatus.active,
+          "trialDaysLeft": 7
+        };
+      } else {
+        final trialStart = DateTime.parse(trialStartDateStr);
+        final diffDays = DateTime.now().difference(trialStart).inDays;
+        final daysLeft = 7 - diffDays;
+        if (daysLeft > 0) {
+          return {
+            "type": LicenseType.trial,
+            "status": LicenseStatus.active,
+            "trialDaysLeft": daysLeft
+          };
+        } else {
+          return {
+            "type": LicenseType.trial,
+            "status": LicenseStatus.expired,
+            "trialDaysLeft": 0
+          };
+        }
+      }
     }
 
     // 2. JWT imzasını ve yerel süre doğrulamalarını yap
@@ -217,10 +244,10 @@ class LicensingService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         final newJwt = data["jwt"];
-        
+
         // Yeni JWT'yi yerel sistemlere kaydet
         await _saveLicenseToLocal(licenseKey, newJwt, data);
-        
+
         return {
           "type": _parseLicenseType(data["license_type"]),
           "status": _parseLicenseStatus(data["status"]),
@@ -242,7 +269,7 @@ class LicensingService {
       }
     }
 
-    return {"type": LicenseType.free, "status": LicenseStatus.expired};
+    return {"type": LicenseType.trial, "status": LicenseStatus.expired, "trialDaysLeft": 0};
   }
 
   /// Manuel Lisans Anahtarı ile Aktivasyon Yapma
@@ -297,7 +324,7 @@ class LicensingService {
     // 2. DuckDB SQL Cache güncellemesi
     final stmt = _dbConn.prepare('''
       INSERT OR REPLACE INTO licensing_info (
-        id, license_key, registered_email, license_type, license_status, 
+        id, license_key, registered_email, license_type, license_status,
         activated_at, expires_at, last_verified_at, signed_jwt
       ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?);
     ''');
@@ -332,7 +359,7 @@ class LicensingService {
       case 'pro_yearly': return LicenseType.proYearly;
       case 'pro_lifetime': return LicenseType.proLifetime;
       case 'enterprise': return LicenseType.enterprise;
-      default: return LicenseType.free;
+      default: return LicenseType.trial;
     }
   }
 
@@ -372,10 +399,10 @@ class LicensingState {
   final bool isLoading;
   final String? errorMessage;
 
-  bool get isPremium => 
-      status == LicenseStatus.active && type != LicenseType.free;
+  bool get isPremium =>
+      status == LicenseStatus.active;
 
-  bool get isEnterprise => 
+  bool get isEnterprise =>
       status == LicenseStatus.active && type == LicenseType.enterprise;
 
   LicensingState({
@@ -409,8 +436,8 @@ class LicensingState {
 class LicensingNotifier extends StateNotifier<LicensingState> {
   final LicensingService _service;
 
-  LicensingNotifier(this._service) 
-      : super(LicensingState(type: LicenseType.free, status: LicenseStatus.expired)) {
+  LicensingNotifier(this._service)
+      : super(LicensingState(type: LicenseType.trial, status: LicenseStatus.expired)) {
     checkLicense();
   }
 
@@ -459,14 +486,14 @@ class LicensingNotifier extends StateNotifier<LicensingState> {
 Kullanıcıların satın alma deneyimini maksimize etmek ve arayüzde premium hissi uyandırmak amacıyla şu kurallar uygulanır:
 
 1. **Doğal Limit Uyarıları (Soft Paywalls)**:
-   - Kullanıcı ücretsiz sınırları aşan bir işlem yaptığında (Örn: 3. bir Proje/Workspace eklemeye çalışırken), sert bir hata ekranı yerine, şık bir modal panel ile Pro özelliklerin avantajları anlatılarak doğrudan satın alma linklerine yönlendirilir.
+   - Kullanıcı deneme süresi bittiğinde veya lisanssız kullanımda kısıtlı bir işlem yapmaya çalıştığında (Örn: Bir Proje/Workspace eklemeye çalışırken), sert bir hata ekranı yerine, şık bir modal panel ile Pro özelliklerin avantajları anlatılarak doğrudan satın alma linklerine yönlendirilir.
 2. **Premium Göstergeleri**:
    - Lisans aktif olduğunda, kullanıcı profilinin yanında şık, altın/mor renkli bir **\"PRO\"** veya **\"ENTERPRISE\"** rozeti (badge) gösterilir.
-   - Pro özelliklerin yanına (Örn: Scripting Shell, DuckDB Analytics) hafif ve şık kilit simgeleri yerleştirilir. Ücretsiz üyelerde bu alanlar pasif (disabled) durur ve üzerine tıklandığında manuel lisans giriş penceresi açılır.
+   - Pro özelliklerin yanına (Örn: Scripting Shell, DuckDB Analytics) hafif ve şık kilit simgeleri yerleştirilir. Lisanssız veya deneme süresi dolmuş kullanıcılarda bu alanlar pasif (disabled) durur ve üzerine tıklandığında manuel lisans giriş penceresi açılır.
 3. **Manuel Lisans Giriş Ekranı (Manual Key Entry View)**:
    - Kullanıcıların lisans anahtarlarını girebilecekleri ekran son derece sade tasarlanır.
    - Ekran üzerinde büyük, monospaced fontla yazılmış bir metin kutusu (`FBX-PRO-XXXX-XXXX-XXXX`), bir "Yapıştır" butonu, bir "Etkinleştir" butonu yer alır.
-   - Kutunun hemen altında yer alan açıklama: *"Satın aldığınız lisans anahtarı faturanıza bağlı e-posta adresinize gönderilmiştir. Lisansınızı aynı anda en fazla 3 aktif cihazda manuel etkinleştirebilirsiniz."*
+   - Kutunun hemen altında yer alan açıklama: *"Satın aldığınız lisans anahtarı faturanıza bağlı e-posta adresinize gönderilmiştir. Lisansınızı aynı anda en fazla 2 aktif cihazda (Maks. 1 Masaüstü ve Maks. 1 Mobil) manuel etkinleştirebilirsiniz. Aynı lisans aynı anda 2 masaüstü veya 2 mobil cihazda çalışamaz."*
 4. **Mobil "Masaüstünde de Kullan" Köprüsü**:
    - Mobil uygulamadan Adapty aracılığıyla abone olan kullanıcılara, ayarlarda "Masaüstünde de Kullan" seçeneği gösterilir.
    - Kullanıcı buraya e-postasını yazdığında sunucuya giden istek doğrulanır ve kullanıcının e-postasına taşınabilir Lisans Anahtarı gönderilir. Böylece kullanıcı masaüstü uygulamasına bu anahtarı yazarak lisansını iki platformda da birleştirmiş olur.

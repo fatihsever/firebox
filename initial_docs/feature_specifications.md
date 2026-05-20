@@ -1,6 +1,6 @@
 # Fonksiyonel Özellik Detayları - Firebox
 
-Bu doküman, Firebox uygulamasında yer alacak tüm ana modülleri, bu modüllerin alt özelliklerini, kullanıcı senaryolarını, ücretsiz/ücretli sürüm kısıtlamalarını (Paywall) ve teknik gereksinimlerini ayrıntılı olarak açıklamaktadır.
+Bu doküman, Firebox uygulamasında yer alacak tüm ana modülleri, bu modüllerin alt özelliklerini, kullanıcı senaryolarını, deneme sürümü (Free Trial) ve lisanslama kısıtlamalarını (Paywall) ve teknik gereksinimlerini ayrıntılı olarak açıklamaktadır.
 
 ---
 
@@ -28,7 +28,7 @@ Kullanıcı uygulamaya yeni bir Firebase projesi eklemek istediğinde karşısı
    - Kullanıcıdan Firestore, Auth ve Storage emülatörlerinin port bilgileri istenir (Örn: Firestore: 8080, Auth: 9099, Storage: 9199).
    - Emülatör bağlantıları için SSL/şifreleme aranmaz, yerel HTTP üzerinden hızlıca bağlanılır.
 
-> ⚠️ **Ücretsiz Sürüm Sınırı (Free Tier Limit)**: Ücretsiz kullanıcılar en fazla **2 aktif Workspace** ekleyebilir. 3. bir proje eklenmeye çalışıldığında, "Pro Sürüme Yükselt" ödeme ekranı (Paywall) gösterilir.
+> ⚠️ **Deneme Sürümü Sınırı (Free Trial Limit)**: 7 günlük ücretsiz deneme süresi bittiğinde, kullanıcı yeni bir Workspace ekleyemez veya mevcut olanlara bağlanamaz; premium lisans anahtarı girmesi istenir.
 
 ### 1.2. Workspace Özelleştirme ve Güvenlik Önlemleri
 Bağlanan her proje bir "Workspace Card" haline gelir ve şu ayarlara sahip olur:
@@ -63,11 +63,11 @@ Kullanıcı döküman listesini ve detaylarını 3 farklı formatta görüntüle
    - Excel benzeri bir tablo tasarımı sunulur. Sütunlar döküman alanlarını (fields), satırlar ise dökümanları temsil eder.
    - Sütun başlıklarına tıklanarak yerel sıralama yapılabilir. Sütunlar sürüklenebilir, gizlenebilir veya yeniden boyutlandırılabilir.
    - Hücrelere çift tıklanarak **Inline Düzenleme (Satır içi düzenleme)** yapılabilir. Değişiklikler anında Firestore'a kaydedilir.
-2. **Ağaç Görünümü (Tree View) - [FREE/PRO]**:
+2. **Ağaç Görünümü (Tree View) - [TRIAL/PRO]**:
    - İç içe geçmiş (nested) Map ve Array içeren dökümanlar için idealdir.
    - Karmaşık objeler daraltılabilir (collapse) ve genişletilebilir (expand).
    - Yeni bir alan eklemek için "+" butonuna tıklanarak veri tipi (String, Number, Boolean, Map, Array, Null, Timestamp, Geopoint, Document Reference) seçilir.
-   - *Ücretsiz sürümde döküman tipleme sınırı maks. 50 dökümandır.*
+   - *7 günlük deneme süresi boyunca bu görünüm ve diğer tüm Pro özellikler sınırsız olarak kullanılabilir; deneme süresi bittiğinde ise premium lisans anahtarı girilmesi gerekir.*
 3. **JSON Görünümü (JSON View) - [PRO]**:
    - Dökümanı doğrudan saf bir JSON metni olarak görüntüler.
    - Entegre kod editörü sayesinde kullanıcı JSON üzerinde doğrudan değişiklik yapıp \"Kaydet\" dediğinde, JSON çözümlenir ve Firestore belgesi güncellenir. Sözdizimi (Syntax) hataları kaydetmeden önce doğrulanır.
@@ -143,13 +143,13 @@ Uygulamanın Cloud Storage üzerindeki dosyaları tıpkı bir işletim sistemi d
 
 ### 4.1. Klasör ve Dosya Gezgini
 - **Ağaç ve Tablo Düzeni**: Dosyalar hiyerarşik klasör yapısında taranır. Boyut, dosya türü ve son değiştirilme tarihlerine göre listelenir.
-- **Sürükle-Bırak Yükleme - [PRO]**: Kullanıcı bilgisayarından sürüklediği bir veya birden fazla dosya/klasörü doğrudan Firebox penceresine bırakarak Storage'a yükleyebilir. *Ücretsiz sürümde sadece manuel dosya seçimi aktiftir.*
+- **Sürükle-Bırak Yükleme - [PRO]**: Kullanıcı bilgisayarından sürüklediği bir veya birden fazla dosya/klasörü doğrudan Firebox penceresine bırakarak Storage'a yükleyebilir. *7 günlük deneme süresi boyunca sürükle-bırak yükleme özelliği dahil tüm özellikler tamamen açıktır; deneme sonrasında lisans anahtarı ile etkinleştirilmesi gerekir.*
 - **Klasör Oluşturma**: Firebase Storage'da gerçek klasörler bulunmaz (nesne anahtarı yapısı - object key path). Uygulama boş klasör yapısını simüle etmek için arkada `.placeholder` dosyası oluşturarak kullanıcıya gerçekçi bir klasör oluşturma deneyimi sunar.
 
 ### 4.2. İndirme ve Yükleme Kuyruğu (Queue Manager)
 Büyük boyutlu dosya transferleri için ekranın alt kısmında veya ayrı bir sekmede çalışan bir kuyruk yöneticisi bulunur:
-- **Eşzamanlılık Kontrolü**: Aynı anda en fazla 3 transfer aktif olarak çalışır, diğerleri sıraya alınır. *(Ücretsiz sürümde paralel transfer kapalıdır, işlemler sırayla tek tek yürütülür).*
-- **Dosya Boyutu Sınırı**: Ücretsiz kullanıcılar tek seferde en fazla **10MB** boyutunda dosya transfer edebilirler. Pro üyeler için sınır bulunmamaktadır.
+- **Eşzamanlılık Kontrolü**: Aynı anda en fazla 3 transfer aktif olarak çalışır, diğerleri sıraya alınır. *(7 günlük deneme süresince paralel transferler tamamen desteklenir).*
+- **Dosya Boyutu Sınırı**: 7 günlük deneme süresi ve sonrasında Pro/Enterprise üyeleri için herhangi bir dosya boyutu sınırı bulunmamaktadır.
 - **Kontrol Butonları**: Her transfer için "Duraklat" (Pause), "Devam Et" (Resume) ve "İptal Et" (Cancel) butonları sunulur.
 - **Hız ve Süre Gösterimi**: Transfer hızı (MB/s) ve kalan tahmini süre (ETA) dinamik olarak hesaplanarak gösterilir.
 
@@ -218,8 +218,8 @@ Uygulamanın ticari yapısını yöneten, abonelik işlemlerini doğrulayan ve k
 - **Manuel Lisans Girişi**: Uygulamada bulunan "Lisans Anahtarı Gir" (Enter License Key) alanına kullanıcı e-postasına gelen anahtarı yapıştırarak "Etkinleştir" butonuna basar.
 
 ### 7.2. Lisans Doğrulama ve Cihaz Limitleri
-- Kullanıcıların lisansları tek bir platforma kilitlenmez. Manuel olarak girilen geçerli bir Pro Lisans Anahtarı aynı anda **3 farklı cihazda** (Örn: 1 Mac, 1 Windows, 1 Android Telefon) geçerli olur.
-- Lisans sunucusu, arka planda cihaz donanım imzalarını (Hardware UUID) takip ederek aşırı cihaz kullanımlarını engeller. Sınır aşımında "Maksimum cihaz limitine ulaştınız" uyarısı verir.
+- Kullanıcıların lisansları tek bir platforma kilitlenmez. Manuel olarak girilen geçerli bir Pro Lisans Anahtarı aynı anda **en fazla 2 farklı cihazda** (1 Masaüstü ve 1 Mobil cihaz) aktif edilebilir. Aynı lisans ile aynı anda 2 masaüstü veya 2 mobil cihaz üzerinde çalışma yapılmasına izin verilmez. Bu sayede, geliştirici hem bilgisayarında hem de test telefonunda lisansı kullanabilir ancak lisansın birden fazla bilgisayarda paylaşılmasının önüne geçilir.
+- Lisans sunucusu, arka planda cihaz donanım imzalarını (Hardware UUID) takip ederek aşırı cihaz kullanımlarını engeller. Sınır aşımında veya eşzamanlı cihaz türü kısıtlamasının ihlalinde (Örn: 2. bir masaüstü cihazı aktifleştirilmeye çalışıldığında) uygun bir hata mesajı ("Bu lisans aynı anda sadece 1 Masaüstü ve 1 Mobil cihazda çalışabilir") verir.
 - Etkinleştirme başarılı olduğunda sunucu şifrelenmiş, imzalı bir JWT döndürür. Bu JWT yerel güvenli kasaya kaydedilir ve internet olmasa dahi 7 gün boyunca çevrimdışı doğrulamayı (Offline Grace Period) sağlar.
 
 ### 7.3. Basitleştirilmiş Kurumsal (Enterprise) Toplu Lisanslama
