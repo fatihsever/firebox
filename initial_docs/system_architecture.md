@@ -2,12 +2,16 @@
 
 Bu doküman, Firebox uygulamasının teknik mimarisini, veri akışını, platform entegrasyonlarını, güvenlik yapılandırmalarını ve kod tasarım desenlerini detaylandırmaktadır.
 
+---
+
 ## 1. Mimari Tasarım İlkeleri
 
-Firebox, **Local-First (Önce Yerel)** ve **Serverless Client (Sunucusuz İstemci)** mimarisine dayanmaktadır. İstemci ile Firebase servisleri arasında hiçbir proxy veya Firebox'a ait bir backend sunucusu bulunmaz. Bu yaklaşım üç kritik avantaj sağlar:
+Firebox, **Local-First (Önce Yerel)** ve **Serverless Client (Sunucusuz İstemci)** mimarisine dayanmaktadır. İstemci ile Firebase servisleri arasında hiçbir proxy veya Firebox'a ait bir backend veri sunucusu bulunmaz. Bu yaklaşım üç kritik avantaj sağlar:
 1. **Maksimum Güvenlik**: Kullanıcının gizli Service Account anahtarları veya veritabanı verileri asla üçüncü şahıs sunucularından geçmez.
 2. **Sıfır Sunucu Maliyeti**: Uygulama tamamen istemci üzerinde çalıştığı için operasyonel sunucu maliyeti sıfırdır.
 3. **Düşük Gecikme (Latency)**: İstekler doğrudan cihazdan Google/Firebase API gateway'lerine iletilir.
+
+*Not: Uygulamanın lisans kontrolü, abonelik takipleri ve kurumsal toplu lisans yönetimi için tamamen izole çalışan, hafif ve güvenli bir **Firebox Lisanslama Sunucusu** (Licensing Backend) kullanılır. Bu sunucu sadece lisans doğrulama (JWT üretimi) süreçlerine bakar, Firebase veritabanı akışlarına asla müdahil olamaz.*
 
 ```
 +---------------------------------------------------------------------------------+
@@ -36,6 +40,8 @@ Firebox, **Local-First (Önce Yerel)** ve **Serverless Client (Sunucusuz İstemc
                       +--------------------------------------+
 ```
 
+---
+
 ## 2. Teknoloji Yığını (Tech Stack)
 
 ### Ana Framework ve Dil
@@ -45,7 +51,7 @@ Firebox, **Local-First (Önce Yerel)** ve **Serverless Client (Sunucusuz İstemc
 
 ### Durum Yönetimi (State Management)
 - **Paket**: `flutter_riverpod` ve `riverpod_generator`.
-- **Neden Riverpod?**:
+- **Neden Riverpod?**: 
   - Gelişmiş asenkron veri akış (AsyncValue) desteği.
   - Bağımlılık Enjeksiyonu (Dependency Injection) mekanizmasıyla tam entegrasyon.
   - State'lerin garbage collector tarafından otomatik temizlenmesi (autoDispose).
@@ -66,6 +72,13 @@ Masaüstü uygulamalarında Firebase Native C++ SDK'leri hantal ve kısıtlı ol
 - **`http`**: Özelleştirilmiş HTTP istekleri ve Local Emulator Suite ile haberleşme.
 - **`grpc`**: Firestore'un gerçek zamanlı dinleme (Real-time Listening) özellikleri için yüksek performanslı gRPC kanalı.
 
+### Ödeme ve Lisanslama Kütüphaneleri
+Çapraz platform ödeme ve abonelik akışlarını yerel düzeyde yürütmek için aşağıdaki paketler kullanılır:
+- **`adapty_flutter` (Adapty)**: Mobil uygulama içi satın alımlar, abonelik doğrulama ve iade kontrolleri için.
+- **`url_launcher`**: Masaüstü platformlarında kullanıcıları Stripe veya Paddle ödeme sayfalarına yönlendirmek için.
+
+---
+
 ## 3. Özellik Odaklı Temiz Mimari (Feature-First Clean Architecture)
 
 Firebox kod tabanı, ölçeklenebilirliği artırmak, merge çakışmalarını önlemek ve geliştirme hızını en üst düzeye çıkarmak amacıyla **Feature-First Clean Architecture (Özellik Odaklı Temiz Mimari)** prensiplerine göre tasarlanmıştır.
@@ -79,6 +92,7 @@ lib/
 ├── core/                  # Uygulama genelinde paylaşılan altyapı kodları
 │   ├── database/          # DuckDB servisleri, veritabanı ilklendirme, SQL şemaları ve migration script'leri
 │   ├── security/          # Güvenli depolama (flutter_secure_storage) servisleri (Keychain/Keystore)
+│   ├── licensing/         # Çapraz platform lisans doğrulama servisleri, JWT imza kontrolü ve manuel lisans girişi yönetimi
 │   ├── theme/             # Tasarım sistemi, global Dark-first teması ve renk paletleri
 │   ├── utils/             # Evrensel yardımcılar (tarih formatlama, veri tipi dönüştürücüler)
 │   ├── constants/         # Evrensel sabitler, hata kodları ve API limitleri
@@ -111,12 +125,12 @@ lib/
 │   │   ├── domain/        # JS VM çalışma kuralları, scripting oturum modelleri
 │   │   └── presentation/  # Renklendirmeli kod editörü, canlı terminal çıktısı UI'ı
 │   │
-│   └── analytics/         # Yerel DuckDB Analitik & Raporlama Modülü (Yeni Özellik)
+│   └── analytics/         # Yerel DuckDB Analitik & Raporlama Modülü
 │       ├── data/          # Firestore yerel yedek senkronizatörleri, SQL rapor oluşturma servisleri
 │       ├── domain/        # Analitik gruplama mantığı, veri görselleştirme modelleri, AI prompt kuralları
 │       └── presentation/  # SQL Çalıştırma Alanı (Console), analitik grafikler ve AI raporlama paneli UI'ı
 │
-└── main.dart              # Uygulama giriş noktası ve DuckDB ilklendirme lojiği
+└── main.dart              # Uygulama giriş noktası, DuckDB ve Lisans ilklendirme lojiği
 ```
 
 ### 3.2. Katmanların Rolleri (Feature-Level Layers)
@@ -137,12 +151,14 @@ Her bir feature klasörünün altındaki katmanlar şu sorumlulukları üstlenir
    - **UI Widgets**: Flutter arayüz bileşenleri, sayfalar, responsive paneller ve diyaloglar bu katmanda yer alır.
    - **State Providers (Riverpod)**: UI'ın dinlediği durumları (state) yönetir. Kullanıcı etkileşimlerini alarak repository'ler aracılığıyla veri işlemlerini tetikler ve sonucu UI'a asenkron (`AsyncValue`) olarak aktarır.
 
+---
+
 ## 4. Güvenlik ve Kimlik Doğrulama Mimarisi (Security & Auth)
 
 Firebox, hassas sistem yöneticisi (Admin) yetkileriyle çalıştığından, güvenlik en üst önceliktir.
 
 ### 4.1. Hassas Verilerin Depolanması (Secure Storage)
-Service Account özel anahtarları (Private Keys) ve OAuth yenileme token'ları (Refresh Tokens) asla düz metin olarak yerel veritabanında saklanmaz.
+Service Account özel anahtarları (Private Keys), OAuth yenileme token'ları ve sunucudan gelen imzalı lisans JWT'leri asla düz metin olarak yerel veritabanında saklanmaz.
 - **Mekanizma**: `flutter_secure_storage` paketi kullanılır.
 - **Platform Entegrasyonları**:
   - **macOS**: Apple Keychain Services.
@@ -156,6 +172,8 @@ Uygulama üç farklı kimlik doğrulama yöntemi sunar:
 1. **Service Account JSON**: Kullanıcı yüklediğinde, dosya çözümlenir ve `googleapis_auth` kullanılarak geçici (1 saatlik geçerlilik süresi olan) bir JWT Access Token alınır. Bu token hafızada (RAM) tutulur ve süresi bittiğinde özel anahtar ile yerelde arka planda otomatik olarak yenilenir.
 2. **Google OAuth 2.0**: Masaüstünde yerel bir HTTP sunucu (`localhost:port`) açılarak tarayıcıya yönlendirme yapılır. Google'dan gelen yetkilendirme kodu (auth code) alınarak access/refresh token çifti oluşturulur.
 3. **Firebase CLI Entegrasyonu**: Uygulama açılışında masaüstündeki Firebase CLI konfigürasyon dosyalarını tarar (`~/.config/configstore/firebase-tools.json`). Eğer geçerli bir oturum varsa, buradaki kimlik bilgilerini içe aktararak kullanıcının projelerini anında listeler.
+
+---
 
 ## 5. JavaScript Sanal Makinesi ve Scripting Altyapısı (Scripting Engine)
 
@@ -177,13 +195,31 @@ JS Scripting modülü, **`flutter_js`** paketi kullanılarak izole edilmiş bir 
 ```
 
 ### 5.2. JS Nesne Köprüsü Tasarımı
-Sanal makine başlatıldığında, global kapsamda (global scope) aşağıdaki nesneler enjekte edilir:
-- **`console.log(...args)`**: Çıktıları yakalayıp Dart tarafındaki konsol widget'ına yönlendirir.
+Sanal makine başlatıldığında, global kapsamda (global scope) aşağıdaki nesneler enjekte edilir:\n- **`console.log(...args)`**: Çıktıları yakalayıp Dart tarafındaki konsol widget'ına yönlendirir.
 - **`firebox`**: Dart tarafına mesaj gönderen özel köprü:
   ```javascript
-  const firebox = {\n    firestore: () => ({\n      collection: (path) => ({\n        get: () => sendMessageToDart('firestore_get', { path }),\n        add: (data) => sendMessageToDart('firestore_add', { path, data })\n      }),\n      doc: (path) => ({\n        get: () => sendMessageToDart('firestore_doc_get', { path }),\n        set: (data) => sendMessageToDart('firestore_doc_set', { path, data }),\n        update: (data) => sendMessageToDart('firestore_doc_update', { path, data }),\n        delete: () => sendMessageToDart('firestore_doc_delete', { path })\n      })\n    }),\n    auth: () => ({\n      listUsers: (maxResults) => sendMessageToDart('auth_list_users', { maxResults }),\n      updateUser: (uid, data) => sendMessageToDart('auth_update_user', { uid, data })\n    })\n  };
+  const firebox = {
+    firestore: () => ({
+      collection: (path) => ({
+        get: () => sendMessageToDart('firestore_get', { path }),
+        add: (data) => sendMessageToDart('firestore_add', { path, data })
+      }),
+      doc: (path) => ({
+        get: () => sendMessageToDart('firestore_doc_get', { path }),
+        set: (data) => sendMessageToDart('firestore_doc_set', { path, data }),
+        update: (data) => sendMessageToDart('firestore_doc_update', { path, data }),
+        delete: () => sendMessageToDart('firestore_doc_delete', { path })
+      })
+    }),
+    auth: () => ({
+      listUsers: (maxResults) => sendMessageToDart('auth_list_users', { maxResults }),
+      updateUser: (uid, data) => sendMessageToDart('auth_update_user', { uid, data })
+    })
+  };
   ```
 - **Hata Yönetimi (Error Handling)**: JS tarafında fırlatılan istisnalar (exceptions) yakalanarak Dart tarafında satır numarası ve hata mesajıyla birlikte konsolda kırmızı renkle gösterilir.
+
+---
 
 ## 6. Arka Plan İşlem Yönetimi (Background Work & Multi-Threading)
 
@@ -195,4 +231,4 @@ Büyük JSON/CSV dosyalarının işlenmesi, parsing işlemleri ve eş zamanlı a
 - **Isolate Port Haberleşmesi**: İlerleme durumu (progress percentage) ve anlık hız bilgileri ana isolate'e (UI Thread) gönderilerek ilerleme çubukları gerçek zamanlı güncellenir.
 
 ### 6.2. Asenkron Görev Havuzu (Task Queue Manager)
-Cloud Storage yükleme/indirme işlemleri için aynı anda en fazla 3 dosyanın transfer edilmesine izin veren, diğerlerini sırada (pending) tutan bir asenkron kuyruk yönetimi (`Concurrency Controller`) uygulanır.
+Cloud Storage yükleme/indirme işlemleri için aynı onda en fazla 3 dosyanın transfer edilmesine izin veren, diğerlerini sırada (pending) tutan bir asenkron kuyruk yönetimi (`Concurrency Controller`) uygulanır.
