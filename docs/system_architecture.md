@@ -1,21 +1,21 @@
-# Sistem Mimarisi - Firebox
+# Sistem Mimarisi - Firedock
 
-Bu doküman, Firebox uygulamasının teknik mimarisini, veri akışını, platform entegrasyonlarını, güvenlik yapılandırmalarını ve kod tasarım desenlerini detaylandırmaktadır.
+Bu doküman, Firedock uygulamasının teknik mimarisini, veri akışını, platform entegrasyonlarını, güvenlik yapılandırmalarını ve kod tasarım desenlerini detaylandırmaktadır.
 
 ---
 
 ## 1. Mimari Tasarım İlkeleri
 
-Firebox, **Local-First (Önce Yerel)** ve **Serverless Client (Sunucusuz İstemci)** mimarisine dayanmaktadır. İstemci ile Firebase servisleri arasında hiçbir proxy veya Firebox'a ait bir backend veri sunucusu bulunmaz. Bu yaklaşım üç kritik avantaj sağlar:
+Firedock, **Local-First (Önce Yerel)** ve **Serverless Client (Sunucusuz İstemci)** mimarisine dayanmaktadır. İstemci ile Firebase servisleri arasında hiçbir proxy veya Firedock'a ait bir backend veri sunucusu bulunmaz. Bu yaklaşım üç kritik avantaj sağlar:
 1. **Maksimum Güvenlik**: Kullanıcının gizli Service Account anahtarları veya veritabanı verileri asla üçüncü şahıs sunucularından geçmez.
 2. **Sıfır Sunucu Maliyeti**: Uygulama tamamen istemci üzerinde çalıştığı için operasyonel sunucu maliyeti sıfırdır.
 3. **Düşük Gecikme (Latency)**: İstekler doğrudan cihazdan Google/Firebase API gateway'lerine iletilir.
 
-*Not: Uygulamanın lisans kontrolü, abonelik takipleri ve kurumsal toplu lisans yönetimi için tamamen izole çalışan, hafif ve güvenli bir **Firebox Lisanslama Sunucusu** (Licensing Backend) kullanılır. Bu sunucu sadece lisans doğrulama (JWT üretimi) süreçlerine bakar, Firebase veritabanı akışlarına asla müdahil olamaz.*
+*Not: Uygulamanın lisans kontrolü, abonelik takipleri ve kurumsal toplu lisans yönetimi için tamamen izole çalışan, hafif ve güvenli bir **Firedock Lisanslama Sunucusu** (Licensing Backend) kullanılır. Bu sunucu sadece lisans doğrulama (JWT üretimi) süreçlerine bakar, Firebase veritabanı akışlarına asla müdahil olamaz.*
 
 ```
 +---------------------------------------------------------------------------------+
-|                                FIREBOX CLIENT                                   |
+|                                FIREDOCK CLIENT                                   |
 |                                                                                 |
 |  +--------------------+    +-----------------------+    +--------------------+  |
 |  |  Presentation UI   | <  |  Riverpod Providers   |  > |  Local DuckDB      |  |
@@ -51,7 +51,7 @@ Firebox, **Local-First (Önce Yerel)** ve **Serverless Client (Sunucusuz İstemc
 
 ### Durum Yönetimi (State Management)
 - **Paket**: `flutter_riverpod` ve `riverpod_generator`.
-- **Neden Riverpod?**: 
+- **Neden Riverpod?**:
   - Gelişmiş asenkron veri akış (AsyncValue) desteği.
   - Bağımlılık Enjeksiyonu (Dependency Injection) mekanizmasıyla tam entegrasyon.
   - State'lerin garbage collector tarafından otomatik temizlenmesi (autoDispose).
@@ -61,12 +61,12 @@ Firebox, **Local-First (Önce Yerel)** ve **Serverless Client (Sunucusuz İstemc
 - **Paket**: `dart_duckdb`
 - **Neden DuckDB?**:
   - **İlişkisel ve Gelişmiş Analitik Gücü (OLAP)**: DuckDB, hızlı ilişkisel veri depolama sağlamanın yanı sıra, veritabanı içi analitik, veri agregasyonları ve raporlama özellikleri için optimize edilmiş yüksek performanslı bir "Sütun Tabanlı" (Columnar) SQL veritabanıdır.
-  - **Firebase Analiz ve Caching**: Firebase NoSQL yapıda olduğundan, karmaşık gruplamalar ve analizler (Örn: "Hangi kullanıcılar geçen ay en çok siparişi verdi?" gibi sorgular) Firestore üzerinde çok maliyetlidir. Firebox, Firestore yedeklerini yerel DuckDB tablolarına senkronize ederek kullanıcıların doğrudan SQL standartlarında karmaşık raporlar ve analizler yapabilmesine imkan tanır.
+  - **Firebase Analiz ve Caching**: Firebase NoSQL yapıda olduğundan, karmaşık gruplamalar ve analizler (Örn: "Hangi kullanıcılar geçen ay en çok siparişi verdi?" gibi sorgular) Firestore üzerinde çok maliyetlidir. Firedock, Firestore yedeklerini yerel DuckDB tablolarına senkronize ederek kullanıcıların doğrudan SQL standartlarında karmaşık raporlar ve analizler yapabilmesine imkan tanır.
   - **Yapay Zeka (AI) ve Vektör Desteği**: İleride eklenecek yerel AI asistanları ve RAG (Retrieval-Augmented Generation) özellikleri için DuckDB'nin gelişmiş veri tarama, Parquet/CSV doğrudan okuma ve vektör analitiği yetenekleri kullanılacaktır.
   - **Sıfır Konfigürasyon ve Gömülü Çalışma**: İşletim sistemlerinde yerel bir SQLite gibi çalışır, sunucu kurulumu gerektirmez ve ACID uyumludur.
 
 ### Ağ ve Firebase Entegrasyonu
-Masaüstü uygulamalarında Firebase Native C++ SDK'leri hantal ve kısıtlı olduğundan, Firebox **Google API REST / gRPC** istemcilerini ve resmi Dart paketlerini kullanır:
+Masaüstü uygulamalarında Firebase Native C++ SDK'leri hantal ve kısıtlı olduğundan, Firedock **Google API REST / gRPC** istemcilerini ve resmi Dart paketlerini kullanır:
 - **`googleapis`**: Google Cloud API'leri ile doğrudan REST tabanlı entegrasyon (Firestore, Authentication, Storage API v1).
 - **`googleapis_auth`**: Service Account JSON ve Google OAuth 2.0 kimlik doğrulama süreçleri için.
 - **`http`**: Özelleştirilmiş HTTP istekleri ve Local Emulator Suite ile haberleşme.
@@ -81,7 +81,7 @@ Masaüstü uygulamalarında Firebase Native C++ SDK'leri hantal ve kısıtlı ol
 
 ## 3. Özellik Odaklı Temiz Mimari (Feature-First Clean Architecture)
 
-Firebox kod tabanı, ölçeklenebilirliği artırmak, merge çakışmalarını önlemek ve geliştirme hızını en üst düzeye çıkarmak amacıyla **Feature-First Clean Architecture (Özellik Odaklı Temiz Mimari)** prensiplerine göre tasarlanmıştır.
+Firedock kod tabanı, ölçeklenebilirliği artırmak, merge çakışmalarını önlemek ve geliştirme hızını en üst düzeye çıkarmak amacıyla **Feature-First Clean Architecture (Özellik Odaklı Temiz Mimari)** prensiplerine göre tasarlanmıştır.
 
 Tüm kod yapısı öncelikle **kullanıcıya dönük bağımsız modüllere (Features)** bölünmüş, ardından her modül kendi içinde **Data, Domain ve Presentation** katmanlarına ayrılmıştır.
 
@@ -155,7 +155,7 @@ Her bir feature klasörünün altındaki katmanlar şu sorumlulukları üstlenir
 
 ## 4. Güvenlik ve Kimlik Doğrulama Mimarisi (Security & Auth)
 
-Firebox, hassas sistem yöneticisi (Admin) yetkileriyle çalıştığından, güvenlik en üst önceliktir.
+Firedock, hassas sistem yöneticisi (Admin) yetkileriyle çalıştığından, güvenlik en üst önceliktir.
 
 ### 4.1. Hassas Verilerin Depolanması (Secure Storage)
 Service Account özel anahtarları (Private Keys), OAuth yenileme token'ları ve sunucudan gelen imzalı lisans JWT'leri asla düz metin olarak yerel veritabanında saklanmaz.
@@ -177,7 +177,7 @@ Uygulama üç farklı kimlik doğrulama yöntemi sunar:
 
 ## 5. JavaScript Sanal Makinesi ve Scripting Altyapısı (Scripting Engine)
 
-Firebox'ın en ayırt edici özelliklerinden biri, kullanıcının Firestore üzerinde toplu işlemler yapmasını sağlayan entegre JavaScript kabuğudur (Shell).
+Firedock'ın en ayırt edici özelliklerinden biri, kullanıcının Firestore üzerinde toplu işlemler yapmasını sağlayan entegre JavaScript kabuğudur (Shell).
 
 ### 5.1. Çalışma Mantığı (Scripting Bridge)
 JS Scripting modülü, **`flutter_js`** paketi kullanılarak izole edilmiş bir **QuickJS/V8** sanal makinesinde çalışır.
@@ -186,7 +186,7 @@ JS Scripting modülü, **`flutter_js`** paketi kullanılarak izole edilmiş bir 
 +------------------------------------+       Dart-JS Bridge       +------------------------------------+
 |         JavaScript Runtime         | -------------------------> |            Dart Runtime            |
 |                                    | <------------------------- |                                    |
-|  const db = firebox.firestore();   |    JSON RPC / Messaging    |  // Dart Firestore Service         |
+|  const db = firedock.firestore();   |    JSON RPC / Messaging    |  // Dart Firestore Service         |
 |  await db.doc('users/1').update({  |                            |  Future<void> updateDocument(...)  |
 |    role: 'admin'                   |                            |  {                                 |
 |  });                               |                            |    // REST API çağrısı yapar       |
@@ -196,9 +196,9 @@ JS Scripting modülü, **`flutter_js`** paketi kullanılarak izole edilmiş bir 
 
 ### 5.2. JS Nesne Köprüsü Tasarımı
 Sanal makine başlatıldığında, global kapsamda (global scope) aşağıdaki nesneler enjekte edilir:\n- **`console.log(...args)`**: Çıktıları yakalayıp Dart tarafındaki konsol widget'ına yönlendirir.
-- **`firebox`**: Dart tarafına mesaj gönderen özel köprü:
+- **`firedock`**: Dart tarafına mesaj gönderen özel köprü:
   ```javascript
-  const firebox = {
+  const firedock = {
     firestore: () => ({
       collection: (path) => ({
         get: () => sendMessageToDart('firestore_get', { path }),

@@ -1,6 +1,6 @@
-# Fonksiyonel Özellik Detayları - Firebox
+# Fonksiyonel Özellik Detayları - Firedock
 
-Bu doküman, Firebox uygulamasında yer alacak tüm ana modülleri, bu modüllerin alt özelliklerini, kullanıcı senaryolarını, deneme sürümü (Free Trial) ve lisanslama kısıtlamalarını (Paywall) ve teknik gereksinimlerini ayrıntılı olarak açıklamaktadır.
+Bu doküman, Firedock uygulamasında yer alacak tüm ana modülleri, bu modüllerin alt özelliklerini, kullanıcı senaryolarını, deneme sürümü (Free Trial) ve lisanslama kısıtlamalarını (Paywall) ve teknik gereksinimlerini ayrıntılı olarak açıklamaktadır.
 
 ---
 
@@ -17,7 +17,7 @@ Kullanıcı uygulamaya yeni bir Firebase projesi eklemek istediğinde karşısı
    - Kullanıcı listeden istediği projeleri seçerek Workspace listesine ekler.
 2. **Service Account JSON Yükleme**:
    - Kullanıcı Google Cloud Console'dan indirdiği `.json` uzantılı hizmet hesabı anahtar dosyasını sürükleyip bırakır veya dosya seçiciden seçer.
-   - Firebox dosyayı doğrular (`project_id`, `private_key` ve `client_email` alanlarının varlığı kontrol edilir).
+   - Firedock dosyayı doğrular (`project_id`, `private_key` ve `client_email` alanlarının varlığı kontrol edilir).
    - Bu yöntem, projeye tam "Firebase Admin" yetkisiyle erişim sağlar.
 3. **Firebase CLI Entegrasyonu (Otomatik Keşif)**:
    - Uygulama, kullanıcının bilgisayarında daha önce Firebase CLI kullanıp kullanmadığını kontrol eder.
@@ -73,7 +73,7 @@ Kullanıcı döküman listesini ve detaylarını 3 farklı formatta görüntüle
    - Entegre kod editörü sayesinde kullanıcı JSON üzerinde doğrudan değişiklik yapıp \"Kaydet\" dediğinde, JSON çözümlenir ve Firestore belgesi güncellenir. Sözdizimi (Syntax) hataları kaydetmeden önce doğrulanır.
 
 ### 2.2. Gelişmiş Sorgu Oluşturucu (Query Builder)
-Firebase Console'un yetersiz kaldığı durumlarda Firebox gelişmiş sorgulama imkanı tanır:
+Firebase Console'un yetersiz kaldığı durumlarda Firedock gelişmiş sorgulama imkanı tanır:
 - **Çoklu Filtreleme**: Kullanıcı birden fazla `where` koşulu ekleyebilir (Örn: `age >= 18` AND `status == 'active'`).
 - **Farklı Alanlarda Sıralama**: Firestore kuralları gereği farklı alanlarda sıralama yapıldığında indeks gereklidir. Uygulama, eğer sorgu indeks eksikliğinden dolayı hata verirse, Firebase Console'un indeks oluşturma URL'ini içeren hatayı yakalar ve kullanıcıya "İndeks Oluştur" butonu sunar.
 - **Özel Operatörler**: `starts-with` (başlangıç karakteri araması), `array-contains`, `array-contains-any`, `in`, `not-in` operatörleri arayüzden kolayca seçilebilir.
@@ -91,7 +91,7 @@ Firebase Console'un yetersiz kaldığı durumlarda Firebox gelişmiş sorgulama 
 
 ### 2.5. Gelişmiş CRUD İşlemleri
 - **Döküman Taşıma ve Kopyalama**: Bir dökümanı başka bir koleksiyona veya tamamen başka bir Firebase projesine kopyalama/taşıma.
-- **Döküman Yeniden Adlandırma (Rename)**: Firestore'da döküman kimliği (ID) doğrudan değiştirilemez. Firebox bunu kolaylaştırmak için arka planda hedef ID ile dökümanın birebir kopyasını oluşturur, başarılı olursa eski dökümanı siler (Transaction içinde güvenli işlem).
+- **Döküman Yeniden Adlandırma (Rename)**: Firestore'da döküman kimliği (ID) doğrudan değiştirilemez. Firedock bunu kolaylaştırmak için arka planda hedef ID ile dökümanın birebir kopyasını oluşturur, başarılı olursa eski dökümanı siler (Transaction içinde güvenli işlem).
 - **Alt Koleksiyon (Subcollection) Yönetimi**: Dökümanın altındaki alt koleksiyonlar hiyerarşik ağaç yapısında listelenir, yeni alt koleksiyonlar oluşturulabilir.
 
 ---
@@ -111,10 +111,10 @@ Firebase Auth üzerindeki kullanıcı kayıtlarını yönetmek için geliştiril
 - **Bulk (Toplu) İşlemler**: Arayüzden çoklu seçim yapılarak yüzlerce kullanıcı tek seferde dondurulabilir veya silinebilir.
 
 ### 3.3. Custom Claims (Özel Yetkiler) Editörü
-Firebase Auth'un en güçlü özelliklerinden biri olan custom claims, kullanıcı rollerini belirler. Firebox içinde bu işlem için özel bir görsel editör yer alır:
+Firebase Auth'un en güçlü özelliklerinden biri olan custom claims, kullanıcı rollerini belirler. Firedock içinde bu işlem için özel bir görsel editör yer alır:
 - Kullanıcının detay panelinde "Custom Claims" sekmesi bulunur.
 - Kullanıcı buraya `{"admin": true, "premium": false, "department": "sales"}` gibi JSON verileri girer.
-- Firebox bunu doğrular ve Firebase Auth Admin SDK API'si üzerinden kullanıcının token'ına yazar. Kullanıcının bir sonraki oturum açışında bu yetkiler geçerli olur.
+- Firedock bunu doğrular ve Firebase Auth Admin SDK API'si üzerinden kullanıcının token'ına yazar. Kullanıcının bir sonraki oturum açışında bu yetkiler geçerli olur.
 
 ### 3.4. Auth Verisi Aktarma (Import/Export) - [PRO]
 - **Dışa Aktarma (Export)**: Tüm auth kullanıcıları şifre hash'leri de dahil olmak üzere (veya hash'siz olarak) CSV ya da JSON formatında bilgisayara indirilebilir.
@@ -143,7 +143,7 @@ Uygulamanın Cloud Storage üzerindeki dosyaları tıpkı bir işletim sistemi d
 
 ### 4.1. Klasör ve Dosya Gezgini
 - **Ağaç ve Tablo Düzeni**: Dosyalar hiyerarşik klasör yapısında taranır. Boyut, dosya türü ve son değiştirilme tarihlerine göre listelenir.
-- **Sürükle-Bırak Yükleme - [PRO]**: Kullanıcı bilgisayarından sürüklediği bir veya birden fazla dosya/klasörü doğrudan Firebox penceresine bırakarak Storage'a yükleyebilir. *7 günlük deneme süresi boyunca sürükle-bırak yükleme özelliği dahil tüm özellikler tamamen açıktır; deneme sonrasında lisans anahtarı ile etkinleştirilmesi gerekir.*
+- **Sürükle-Bırak Yükleme - [PRO]**: Kullanıcı bilgisayarından sürüklediği bir veya birden fazla dosya/klasörü doğrudan Firedock penceresine bırakarak Storage'a yükleyebilir. *7 günlük deneme süresi boyunca sürükle-bırak yükleme özelliği dahil tüm özellikler tamamen açıktır; deneme sonrasında lisans anahtarı ile etkinleştirilmesi gerekir.*
 - **Klasör Oluşturma**: Firebase Storage'da gerçek klasörler bulunmaz (nesne anahtarı yapısı - object key path). Uygulama boş klasör yapısını simüle etmek için arkada `.placeholder` dosyası oluşturarak kullanıcıya gerçekçi bir klasör oluşturma deneyimi sunar.
 
 ### 4.2. İndirme ve Yükleme Kuyruğu (Queue Manager)
@@ -154,7 +154,7 @@ Büyük boyutlu dosya transferleri için ekranın alt kısmında veya ayrı bir 
 - **Hız ve Süre Gösterimi**: Transfer hızı (MB/s) ve kalan tahmini süre (ETA) dinamik olarak hesaplanarak gösterilir.
 
 ### 4.3. Entegre Medya Önizleyicileri (In-App Previews)
-Kullanıcı dosyayı indirmeden önce doğrudan Firebox içerisinde önizleyebilir:
+Kullanıcı dosyayı indirmeden önce doğrudan Firedock içerisinde önizleyebilir:
 - **Resim Önizleyici**: PNG, JPG, WEBP, GIF formatındaki resimler için yakınlaştırma/uzaklaştırma destekli görsel önizleme alanı.
 - **Video Oynatıcı**: MP4, WebM formatındaki videolar için entegre oynatıcı (duraklat, sar, ses ayarla).
 - **Ses Oynatıcı**: MP3, WAV formatındaki ses dosyaları için ses dalga şekli (waveform) ve oynatıcı barı.
@@ -207,7 +207,7 @@ Kullanıcı bir CSV veya JSON dosyasını Firestore koleksiyonuna aktarmak isted
 
 ## MODÜL 7: Lisanslama ve Manuel Etkinleştirme (YENİ)
 
-Uygulamanın ticari yapısını yöneten, abonelik işlemlerini doğrulayan ve kullanıcıların satın aldıkları lisansları manuel girmelerini sağlayan modüldür. Firebox bünyesinde üye kayıt veya kullanıcı oturum açma arayüzü barındırmaz; lisans doğrulama tamamen güvenli Lisans Anahtarı tabanlı çalışır.
+Uygulamanın ticari yapısını yöneten, abonelik işlemlerini doğrulayan ve kullanıcıların satın aldıkları lisansları manuel girmelerini sağlayan modüldür. Firedock bünyesinde üye kayıt veya kullanıcı oturum açma arayüzü barındırmaz; lisans doğrulama tamamen güvenli Lisans Anahtarı tabanlı çalışır.
 
 ### 7.1. Ödeme Duvarı (Paywall) ve Manuel Lisans Giriş Ekranı
 - Kullanıcı kısıtlı bir özelliğe tıkladığında (Örn: Tablo Görünümü veya JS Scripting) şık bir paywall kartı açılır.

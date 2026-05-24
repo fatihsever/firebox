@@ -1,12 +1,12 @@
-# UI/UX Tasarım ve Arayüz Rehberi - Firebox
+# UI/UX Tasarım ve Arayüz Rehberi - Firedock
 
-Bu doküman, Firebox uygulamasının responsive (duyarlı) ekran yerleşim tasarımlarını, görsel kimliğini, renk sistemini, tipografisini ve kullanıcı etkileşim (etkileşim) standartlarını belirler.
+Bu doküman, Firedock uygulamasının responsive (duyarlı) ekran yerleşim tasarımlarını, görsel kimliğini, renk sistemini, tipografisini ve kullanıcı etkileşim (etkileşim) standartlarını belirler.
 
 ---
 
 ## 1. Tasarım Felsefesi ve Görsel Dil
 
-Firebox, yoğun veri içeren ve uzun saatler boyunca kullanılan teknik bir yönetim arayüzüdür. Bu nedenle tasarım dilinin temel amacı **göz yorgunluğunu azaltmak**, **hızlı navigasyon sağlamak** ve **operasyonel hataları en aza indirmektir**.
+Firedock, yoğun veri içeren ve uzun saatler boyunca kullanılan teknik bir yönetim arayüzüdür. Bu nedenle tasarım dilinin temel amacı **göz yorgunluğunu azaltmak**, **hızlı navigasyon sağlamak** ve **operasyonel hataları en aza indirmektir**.
 
 - **Birincil Öncelik: Dark-First (Koyu Tema Odaklı)**: Geliştiricilerin gece ve loş ışıkta çalışma alışkanlıkları göz önünde bulundurularak uygulama öncelikli olarak koyu tema odaklı tasarlanır. Açık tema (Light Mode) alternatif bir seçenek olarak sunulur.
 - **SaaS Dashboard Stili**: Temiz sınırlar, keskin hatlar, minimal gölgeler ve düz renk blokları içeren modern bir endüstriyel arayüz stili benimsenmiştir.
@@ -43,7 +43,7 @@ Kullanıcının projelerini görsel olarak birbirinden ayırabilmesi için sol m
 
 ## 3. Responsive Ekran Düzeni (Layout Grid)
 
-Firebox, hem geniş masaüstü ekranlarında (Mac/Windows/Linux) hem de dar mobil ekranlarda (iOS/Android) kusursuz çalışmalıdır.
+Firedock, hem geniş masaüstü ekranlarında (Mac/Windows/Linux) hem de dar mobil ekranlarda (iOS/Android) kusursuz çalışmalıdır.
 
 ### 3.1. Masaüstü Düzeni (Desktop Layout) - Min: 1024px
 Masaüstü ekranlar **Üç Sütunlu Esnek Izgara** yapısını kullanır:

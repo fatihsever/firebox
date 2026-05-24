@@ -1,14 +1,14 @@
-# Lisanslama, Ödeme ve Manuel Doğrulama Altyapısı - Firebox
+# Lisanslama, Ödeme ve Manuel Doğrulama Altyapısı - Firedock
 
-Bu doküman, Firebox uygulamasının ticari dağıtımı için kurgulanan gelir modelini, masaüstü ve mobil platformlar arasındaki manuel lisans anahtarı doğrulamalı çapraz platform senkronizasyon mimarisini, Stripe/Paddle ve Apple/Google mobil ödeme sistemlerinin (Adapty) entegrasyonunu, basitleştirilmiş kurumsal toplu lisanslama altyapısını ve yerel güvenlik doğrulamalarını teknik detaylarıyla açıklamaktadır.
+Bu doküman, Firedock uygulamasının ticari dağıtımı için kurgulanan gelir modelini, masaüstü ve mobil platformlar arasındaki manuel lisans anahtarı doğrulamalı çapraz platform senkronizasyon mimarisini, Stripe/Paddle ve Apple/Google mobil ödeme sistemlerinin (Adapty) entegrasyonunu, basitleştirilmiş kurumsal toplu lisanslama altyapısını ve yerel güvenlik doğrulamalarını teknik detaylarıyla açıklamaktadır.
 
-Firebox, **"Sıfır Sunucu Maliyeti / Maksimum Güvenlik"** prensibine sadık kalmak amacıyla bünyesinde herhangi bir kullanıcı kayıt, üye oturumu açma veya hesap yönetim arayüzü barındırmaz. Lisans doğrulama işlemleri tamamen manuel girilen kriptografik **Lisans Anahtarı** tabanlı çalışır. Lisans sunucusu ise tamamen arka planda (headless) sessizce çalışarak satın alma webhook'larını işler ve lisans anahtarlarını kullanıcılara e-posta ile ulaştırır.
+Firedock, **"Sıfır Sunucu Maliyeti / Maksimum Güvenlik"** prensibine sadık kalmak amacıyla bünyesinde herhangi bir kullanıcı kayıt, üye oturumu açma veya hesap yönetim arayüzü barındırmaz. Lisans doğrulama işlemleri tamamen manuel girilen kriptografik **Lisans Anahtarı** tabanlı çalışır. Lisans sunucusu ise tamamen arka planda (headless) sessizce çalışarak satın alma webhook'larını işler ve lisans anahtarlarını kullanıcılara e-posta ile ulaştırır.
 
 ---
 
 ## 1. Gelir Modeli ve Lisanslama Yapısı (Revenue Model)
 
-Firebox, hem bireysel geliştiricileri hem de geniş yazılım ekiplerini (Enterprise) hedefleyen, esnek ödeme seçeneklerine sahip bir **SaaS (Software-as-a-Service)** modeliyle lisanslanır.
+Firedock, hem bireysel geliştiricileri hem de geniş yazılım ekiplerini (Enterprise) hedefleyen, esnek ödeme seçeneklerine sahip bir **SaaS (Software-as-a-Service)** modeliyle lisanslanır.
 
 ### 1.1. Fiyatlandırma Katmanları (Pricing Tiers)
 Uygulama, yeni kullanıcıların tüm özellikleri değerlendirebilmesi için **7 Günlük Ücretsiz Deneme (Trial)** süresi sunar. Bu süre dolduktan sonra uygulamanın tüm profesyonel yeteneklerinden faydalanabilmek için **Pro** veya **Enterprise** katmanlarından birinin lisans anahtarıyla etkinleştirilmesi gerekir.
@@ -30,14 +30,14 @@ Uygulama, yeni kullanıcıların tüm özellikleri değerlendirebilmesi için **
 
 ## 2. Çapraz Platform Lisans Senkronizasyon Mimarisi (Cross-Platform License Sync)
 
-Kullanıcıların masaüstünden (Stripe/Paddle) satın aldıkları lisansları mobil uygulamada, mobilden (App Store/Google Play) satın aldıkları abonelikleri ise masaüstünde anında ve sorunsuz kullanabilmeleri için **merkezi bir Firebox Lisans Doğrulama Sunucusu (Firebox Licensing Server)** tasarlanmıştır. Bu sunucu kullanıcı dostu bir arayüze/panele sahip değildir; sadece arka planda API olarak çalışır ve başarılı ödemelerde lisans bilgilerini e-posta ile gönderir.
+Kullanıcıların masaüstünden (Stripe/Paddle) satın aldıkları lisansları mobil uygulamada, mobilden (App Store/Google Play) satın aldıkları abonelikleri ise masaüstünde anında ve sorunsuz kullanabilmeleri için **merkezi bir Firedock Lisans Doğrulama Sunucusu (Firedock Licensing Server)** tasarlanmıştır. Bu sunucu kullanıcı dostu bir arayüze/panele sahip değildir; sadece arka planda API olarak çalışır ve başarılı ödemelerde lisans bilgilerini e-posta ile gönderir.
 
 ### 2.1. Lisans Senkronizasyon Akışı
 İstemci (Client-only) local-first prensibiyle çalışırken, lisanslama için güvenli bir JWT (JSON Web Token) tabanlı bulut doğrulama katmanı entegre edilir. Bu sunucu, **Supabase Edge Functions** veya **Node.js/Firebase Cloud Functions** üzerinde hafif bir mikroservis olarak çalıştırılır.
 
 ```
 +-----------------------------------------------------------------------------+
-|                               FIREBOX CLIENT                                |
+|                               FIREDOCK CLIENT                                |
 |                                                                             |
 |  1. Kullanıcı Lisans Anahtarını Manuel Girer                                |
 |  2. Aktivasyon Talebi gönderir (Key + Device ID) ----------\                |
@@ -48,7 +48,7 @@ Kullanıcıların masaüstünden (Stripe/Paddle) satın aldıkları lisansları 
                                                                 \ (Secure HTTPS)
                                                                  v
 +-----------------------------------------------------------------------------+
-|                         FIREBOX LICENSING SERVER                            |
+|                         FIREDOCK LICENSING SERVER                            |
 |                                                                             |
 |  - Lisans veritabanını ve cihaz kayıtlarını yönetir (No-UI, headless).      |
 |  - Satın alma webhook'larını işler (Stripe, Adapty, vb.)                    |
@@ -67,9 +67,9 @@ Kullanıcıların masaüstünden (Stripe/Paddle) satın aldıkları lisansları 
 
 #### Senaryo A: Masaüstünden Satın Alma ve Mobilde Etkinleştirme
 1. Kullanıcı web sitesi üzerinden Stripe veya Paddle entegrasyonuyla ödeme yapar.
-2. Stripe, satın alım başarılı olduğunda **Firebox Licensing Server**'a bir webhook (`invoice.paid` veya `checkout.session.completed`) gönderir.
+2. Stripe, satın alım başarılı olduğunda **Firedock Licensing Server**'a bir webhook (`invoice.paid` veya `checkout.session.completed`) gönderir.
 3. Sunucu otomatik olarak Stripe faturasındaki e-posta adresi için benzersiz bir kriptografik **Lisans Anahtarı** (`FBX-PRO-XXXX-XXXX-XXXX`) üretir ve bu anahtarı müşteriye e-posta ile gönderir (SendGrid, Mailgun vb. aracılığıyla).
-4. Kullanıcı Firebox mobil uygulamasını açar, "Lisans Anahtarı Gir" ekranına bu anahtarı manuel yazar.
+4. Kullanıcı Firedock mobil uygulamasını açar, "Lisans Anahtarı Gir" ekranına bu anahtarı manuel yazar.
 5. Mobil uygulama, Licensing Server'dan `/api/v1/license/activate` uç noktasını cihazın benzersiz ID'si ile asenkron olarak sorgular. Sunucu, SHA-256 ile imzalanmış, süresi ve yetki sınırları belirlenmiş bir JWT döndürür.
 6. Mobil uygulama JWT'yi doğrular, Premium özellikleri açar ve JWT'yi cihazın yerel **Keystore/Keychain** katmanına ve DuckDB'ye kaydeder.
 
@@ -88,7 +88,7 @@ Kullanıcıların masaüstünden (Stripe/Paddle) satın aldıkları lisansları 
 ### 3.1. Masaüstü Entegrasyonu: Stripe & Paddle
 Masaüstü uygulamasında (Mac, Windows, Linux) yerel olarak kredi kartı almak veya harici bir ödeme sayfasına yönlendirmek için **Stripe / Paddle** yapısı kurulur.
 
-- **Stripe Checkout (Yönlendirmeli Ödeme)**: Kullanıcı lisans satın almak istediğinde, uygulama `url_launcher` kullanarak Stripe Checkout sayfasına yönlendirir. Stripe sayfasında ödeme tamamlandıktan sonra kullanıcı deep link (`firebox://`) ile uygulamaya geri döndürülür.
+- **Stripe Checkout (Yönlendirmeli Ödeme)**: Kullanıcı lisans satın almak istediğinde, uygulama `url_launcher` kullanarak Stripe Checkout sayfasına yönlendirir. Stripe sayfasında ödeme tamamlandıktan sonra kullanıcı deep link (`firedock://`) ile uygulamaya geri döndürülür.
 - **Webhook Entegrasyonu**: Stripe'tan gelen ödeme tamamlandı webhook'u sonrasında arka planda çalışan sunucumuz lisans anahtarını oluşturup müşteriye e-posta ile otomatik ulaştırır.
 
 ### 3.2. Mobil Entegrasyon: Adapty (App Store & Google Play)
@@ -115,7 +115,7 @@ Büyük yazılım ekipleri, geliştirme ajansları ve kurumsal şirketler için 
 
 ## 5. Yerel Veritabanı ve Güvenlik Tasarımı (Licensing DB & Security)
 
-Firebox, lisans doğrulamasını güvenli kılmak ve korsan yazılım kullanımını engellemek amacıyla cihaz üzerinde çok katmanlı bir kontrol mekanizması işletir.
+Firedock, lisans doğrulamasını güvenli kılmak ve korsan yazılım kullanımını engellemek amacıyla cihaz üzerinde çok katmanlı bir kontrol mekanizması işletir.
 
 ### 5.1. DuckDB SQL Lisans Tablosu (Local Cache)
 Uygulamanın lisans durumunu yerel olarak hızlıca okuyabilmesi ve internet olmadığında da çalışabilmesi (Offline Mode) için DuckDB'de lisans tablosu kurgulanmıştır.
@@ -139,7 +139,7 @@ CREATE TABLE IF NOT EXISTS licensing_info (
 DuckDB'deki `signed_jwt` ve `license_key` manipülasyonu önlemek amacıyla **`flutter_secure_storage`** içerisinde işletim sisteminin kriptolu kasasında (macOS Keychain, Windows Credential Manager, Android Keystore, iOS Keychain) saklanır. DuckDB'deki tablo sadece hızlı UI okumaları ve istatistikler için önbellek görevi görür. Uygulama açılışında her zaman Secure Storage'daki JWT çözülerek imzası kontrol edilir.
 
 ### 5.3. Çevrimdışı Esneklik Süresi (Offline Grace Period)
-Geliştiricilerin internet bağlantısı olmayan ortamlarda (Örn: Uçakta, tünelde veya saha çalışmalarında) Firebox'ı kullanmaya devam edebilmeleri için **7 günlük Çevrimdışı Esneklik Süresi** tanınır.
+Geliştiricilerin internet bağlantısı olmayan ortamlarda (Örn: Uçakta, tünelde veya saha çalışmalarında) Firedock'ı kullanmaya devam edebilmeleri için **7 günlük Çevrimdışı Esneklik Süresi** tanınır.
 
 - **Doğrulama Algoritması**:
   - Uygulama açıldığında, DuckDB ve Secure Storage'dan `last_verified_at` tarihini ve JWT'yi okur.
@@ -167,7 +167,7 @@ enum LicenseStatus { active, expired, canceled, revoked }
 class LicensingService {
   final FlutterSecureStorage _secureStorage;
   final Connection _dbConn;
-  final String _licensingApiUrl = "https://api.firebox.to/v1/licensing";
+  final String _licensingApiUrl = "https://api.firedock.dev/v1/licensing";
 
   LicensingService({
     required FlutterSecureStorage secureStorage,
@@ -177,15 +177,15 @@ class LicensingService {
   /// Kullanıcının mevcut lisans durumunu önce yerelden yükler, internet varsa sunucuyla senkronize eder.
   Future<Map<String, dynamic>> checkLicenseStatus() async {
     // 1. Secure Storage'dan JWT ve Lisans Anahtarını oku
-    final jwt = await _secureStorage.read(key: "firebox_license_jwt");
-    final licenseKey = await _secureStorage.read(key: "firebox_license_key");
-    final trialStartDateStr = await _secureStorage.read(key: "firebox_trial_start_date");
+    final jwt = await _secureStorage.read(key: "firedock_license_jwt");
+    final licenseKey = await _secureStorage.read(key: "firedock_license_key");
+    final trialStartDateStr = await _secureStorage.read(key: "firedock_trial_start_date");
 
     // Eğer lisans girilmemişse, 7 günlük deneme süresini kontrol et
     if (jwt == null || licenseKey == null) {
       if (trialStartDateStr == null) {
         final nowStr = DateTime.now().toIso8601String();
-        await _secureStorage.write(key: "firebox_trial_start_date", value: nowStr);
+        await _secureStorage.write(key: "firedock_trial_start_date", value: nowStr);
         return {
           "type": LicenseType.trial,
           "status": LicenseStatus.active,
@@ -318,8 +318,8 @@ class LicensingService {
 
   Future<void> _saveLicenseToLocal(String licenseKey, String jwt, Map<String, dynamic> data) async {
     // 1. Secure Storage'a kaydet
-    await _secureStorage.write(key: "firebox_license_key", value: licenseKey);
-    await _secureStorage.write(key: "firebox_license_jwt", value: jwt);
+    await _secureStorage.write(key: "firedock_license_key", value: licenseKey);
+    await _secureStorage.write(key: "firedock_license_jwt", value: jwt);
 
     // 2. DuckDB SQL Cache güncellemesi
     final stmt = _dbConn.prepare('''

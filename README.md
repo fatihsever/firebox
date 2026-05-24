@@ -1,2 +1,2 @@
-# Firebox
+# Firedock
 Firebase GUI

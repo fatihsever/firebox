@@ -1,6 +1,6 @@
-# Veri Modelleri ve Yerel Depolama - Firebox
+# Veri Modelleri ve Yerel Depolama - Firedock
 
-Bu doküman, Firebox uygulamasının yerel veritabanında (**DuckDB**) tutacağı verilerin ilişkisel şemalarını, uygulama içi kullanılan veri modellerini, Firebase API'leri ile haberleşirken kullanılan DTO (Data Transfer Object) yapılarını ve Dart dilinde DuckDB entegrasyon kodlarını tanımlamaktadır.
+Bu doküman, Firedock uygulamasının yerel veritabanında (**DuckDB**) tutacağı verilerin ilişkisel şemalarını, uygulama içi kullanılan veri modellerini, Firebase API'leri ile haberleşirken kullanılan DTO (Data Transfer Object) yapılarını ve Dart dilinde DuckDB entegrasyon kodlarını tanımlamaktadır.
 
 ---
 
@@ -16,7 +16,7 @@ Kullanıcının kaydettiği her bir Firebase projesini temsil eder. Hassas kimli
 ```sql
 CREATE TABLE IF NOT EXISTS workspaces (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    project_id VARCHAR UNIQUE NOT NULL,      -- Firebase Proje Kimliği (Örn: firebox-prod-123)
+    project_id VARCHAR UNIQUE NOT NULL,      -- Firebase Proje Kimliği (Örn: firedock-prod-123)
     name VARCHAR NOT NULL,                    -- Kullanıcının verdiği ad (Örn: Canlı Sunucu)
     color_hex VARCHAR NOT NULL DEFAULT '#6366F1', -- UI'da kullanılacak tema rengi (Örn: #EF4444)
     is_read_only BOOLEAN NOT NULL DEFAULT FALSE,  -- Yanlışlıkla yazmaları önlemek için salt okunur modu
@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS firestore_local_cache (
 ```
 
 ### 1.6. `licensing_info` (Lisans ve Abonelik Bilgisi - YENİ)
-Uygulamanın lisans durumunu cihaz üzerinde önbelleğe alarak hızlı UI kontrolleri ve 7 günlük çevrimdışı kullanım (Offline Grace Period) esnekliği sağlamak amacıyla tasarlanmıştır. Firebox'ta kullanıcı girişi bulunmadığından, lisans tamamen manuel girilen Lisans Anahtarı tabanlı olarak kontrol edilir.
+Uygulamanın lisans durumunu cihaz üzerinde önbelleğe alarak hızlı UI kontrolleri ve 7 günlük çevrimdışı kullanım (Offline Grace Period) esnekliği sağlamak amacıyla tasarlanmıştır. Firedock'ta kullanıcı girişi bulunmadığından, lisans tamamen manuel girilen Lisans Anahtarı tabanlı olarak kontrol edilir.
 
 ```sql
 CREATE TABLE IF NOT EXISTS licensing_info (
@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS licensing_info (
 
 ## 2. Dart DuckDB Servis Katmanı Tasarımı
 
-Firebox uygulamasında DuckDB veritabanı ile etkileşime girmek ve SQL sorguları çalıştırmak için kullanılacak olan Dart servis kod örneği aşağıda sunulmuştur. Bu servis `dart_duckdb` paketi bağımlılığı üzerine kurulmuştur ve lisanslama tablolarını da içerecek şekilde güncellenmiştir.
+Firedock uygulamasında DuckDB veritabanı ile etkileşime girmek ve SQL sorguları çalıştırmak için kullanılacak olan Dart servis kod örneği aşağıda sunulmuştur. Bu servis `dart_duckdb` paketi bağımlılığı üzerine kurulmuştur ve lisanslama tablolarını da içerecek şekilde güncellenmiştir.
 
 ```dart
 // lib/core/database/duckdb_service.dart
@@ -141,7 +141,7 @@ class DuckDbService {
 
     // Uygulama destek dizinini al
     final appDir = await getApplicationSupportDirectory();
-    final dbPath = p.join(appDir.path, 'firebox_local.db');
+    final dbPath = p.join(appDir.path, 'firedock_local.db');
 
     // DuckDB Veritabanını aç / oluştur
     _db = Database(dbPath);
@@ -263,7 +263,7 @@ class DuckDbService {
   Future<void> updateLicensingLocalCache(Map<String, dynamic> license) async {
     final stmt = _conn.prepare('''
       INSERT OR REPLACE INTO licensing_info (
-        id, license_key, registered_email, license_type, license_status, 
+        id, license_key, registered_email, license_type, license_status,
         activated_at, expires_at, last_verified_at, signed_jwt
       ) VALUES (1, ?, ?, ?, ?, ?, ?, ?, ?);
     ''');
@@ -284,7 +284,7 @@ class DuckDbService {
   Future<Map<String, dynamic>?> getCachedLicensingInfo() async {
     final stmt = _conn.prepare('SELECT * FROM licensing_info WHERE id = 1');
     final res = stmt.execute();
-    
+
     if (res.isEmpty) {
       stmt.dispose();
       return null;
@@ -310,8 +310,8 @@ class DuckDbService {
   Future<void> insertWorkspace(Map<String, dynamic> ws) async {
     final stmt = _conn.prepare('''
       INSERT INTO workspaces (
-        project_id, name, color_hex, is_read_only, auth_method, 
-        service_account_file_name, firestore_emulator_port, 
+        project_id, name, color_hex, is_read_only, auth_method,
+        service_account_file_name, firestore_emulator_port,
         auth_emulator_port, storage_emulator_port, created_at, last_accessed_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
     ''');
@@ -335,7 +335,7 @@ class DuckDbService {
   Future<List<Map<String, dynamic>>> getAllWorkspaces() async {
     final stmt = _conn.prepare('SELECT * FROM workspaces ORDER BY last_accessed_at DESC');
     final res = stmt.execute();
-    
+
     final List<Map<String, dynamic>> workspaces = [];
     for (final row in res) {
       workspaces.add({

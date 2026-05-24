@@ -1,14 +1,14 @@
-# Firebox - Flutter Tabanlı Firebase Yönetim ve Geliştirme Platformu
+# Firedock - Flutter Tabanlı Firebase Yönetim ve Geliştirme Platformu
 
-**Firebox**, Firebase projelerinizi en üst düzey verimlilikle yönetmeniz için tasarlanmış, **Flutter** tabanlı, çapraz platform (Masaüstü ve Mobil) destekli yeni nesil bir GUI (Grafik Kullanıcı Arayüzü) istemcisidir.
+**Firedock**, Firebase projelerinizi en üst düzey verimlilikle yönetmeniz için tasarlanmış, **Flutter** tabanlı, çapraz platform (Masaüstü ve Mobil) destekli yeni nesil bir GUI (Grafik Kullanıcı Arayüzü) istemcisidir.
 
-Firefoo'nun masaüstünde sunduğu gelişmiş Firestore ve Authentication özelliklerini temel alan Firebox, bu özellikleri modern bir mobil deneyim, güçlü bir **Firebase Storage Yönetim Modülü**, yerel analitik veritabanı **DuckDB** ve çapraz platform (Masaüstü & Mobil) destekli gelişmiş bir **Ödeme/Lisanslama Altyapısı** ile taçlandırmaktadır. Tamamen yerel (local-first) ve güvenli çalışan Firebox, verilerinizin doğrudan sizin makineniz ile Firebase sunucuları arasında akmasını sağlar; aracı bir sunucu (proxy) barındırmaz.
+Firefoo'nun masaüstünde sunduğu gelişmiş Firestore ve Authentication özelliklerini temel alan Firedock, bu özellikleri modern bir mobil deneyim, güçlü bir **Firebase Storage Yönetim Modülü**, yerel analitik veritabanı **DuckDB** ve çapraz platform (Masaüstü & Mobil) destekli gelişmiş bir **Ödeme/Lisanslama Altyapısı** ile taçlandırmaktadır. Tamamen yerel (local-first) ve güvenli çalışan Firedock, verilerinizin doğrudan sizin makineniz ile Firebase sunucuları arasında akmasını sağlar; aracı bir sunucu (proxy) barındırmaz.
 
 ---
 
 ## 🗺️ Dokümantasyon Haritası ve İndeksi
 
-Bu dizinde, Firebox projesinin sıfırdan son ürüne kadar geliştirilmesi için gerekli olan tüm teknik, mimari, veri ve tasarım dokümantasyonu yer almaktadır. Dokümanlar, bir yazılım geliştirme ekibinin başka hiçbir kaynağa ihtiyaç duymadan uygulamayı uçtan uca geliştirebilmesi için detaylandırılmıştır.
+Bu dizinde, Firedock projesinin sıfırdan son ürüne kadar geliştirilmesi için gerekli olan tüm teknik, mimari, veri ve tasarım dokümantasyonu yer almaktadır. Dokümanlar, bir yazılım geliştirme ekibinin başka hiçbir kaynağa ihtiyaç duymadan uygulamayı uçtan uca geliştirebilmesi için detaylandırılmıştır.
 
 | Doküman | İçerik ve Amacı | Hedef Okuyucu |
 | :--- | :--- | :--- |
@@ -25,7 +25,7 @@ Bu dizinde, Firebox projesinin sıfırdan son ürüne kadar geliştirilmesi içi
 
 1. **Çoklu Platform Gücü (Flutter Desktop & Mobile)**: Mac, Windows, Linux, iOS ve Android üzerinde tamamen aynı iş mantığıyla, ancak platforma özel optimize edilmiş arayüzlerle çalışır.
 2. **Gelişmiş Firestore Gezgini**: Verilerinizi sadece basit listeler halinde değil; Excel benzeri bir **Tablo**, hiyerarşik bir **Ağaç** veya doğrudan ham **JSON** olarak inceleyip düzenleyin.
-3. **Yerel Analitik Gücü (DuckDB Integration)**: Firebox, standart NoSQL araçlarının aksine yerel veritabanı olarak **DuckDB** kullanır. Bu sayede, Firebase verilerinizin yerel yedekleri üzerinde karmaşık SQL sorguları, agregasyonlar, gelişmiş raporlamalar ve yerel yapay zeka (AI) analizleri koşturabilirsiniz.
+3. **Yerel Analitik Gücü (DuckDB Integration)**: Firedock, standart NoSQL araçlarının aksine yerel veritabanı olarak **DuckDB** kullanır. Bu sayede, Firebase verilerinizin yerel yedekleri üzerinde karmaşık SQL sorguları, agregasyonlar, gelişmiş raporlamalar ve yerel yapay zeka (AI) analizleri koşturabilirsiniz.
 4. **JS Scripting Shell**: SQL dünyasındaki veritabanı yönetim araçlarında olduğu gibi, Firestore veritabanınız üzerinde toplu güncellemeleri, şema değişikliklerini ve veri analizlerini JavaScript yazarak saniyeler içinde gerçekleştirin.
 5. **Bütünleşik Firebase Storage Yöneticisi**: Firefoo'da bulunmayan, Firebase projelerinin olmazsa olmazı Cloud Storage için sürükle-bırak destekli, entegre medya oynatıcılu ve yükleme/indirme kuyruk yöneticili tam donanımlı bir arayüz.
 6. **Güvenlik Odaklı Mimari (Secure-by-Design)**: Firebase Service Account anahtarlarınız veya Google OAuth oturum bilgileriniz asla üçüncü taraf sunuculara gitmez; cihazınızın işletim sistemine özel güvenli kasasında (Keychain/Keystore) şifreli olarak saklanır.

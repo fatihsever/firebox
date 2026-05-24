@@ -1,6 +1,6 @@
-# Geliştirme Yol Haritası - Firebox
+# Geliştirme Yol Haritası - Firedock
 
-Bu doküman, Firebox projesinin teknoloji seçimlerini, paket bağımlılıklarını, Feature-First Clean Architecture yapısını, 6 ana faza yayılmış geliştirme takvimini, test süreçlerini ve platformlara göre canlıya alma (dağıtım) stratejilerini içerir.
+Bu doküman, Firedock projesinin teknoloji seçimlerini, paket bağımlılıklarını, Feature-First Clean Architecture yapısını, 6 ana faza yayılmış geliştirme takvimini, test süreçlerini ve platformlara göre canlıya alma (dağıtım) stratejilerini içerir.
 
 ---
 
@@ -57,7 +57,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  
+
   # Code Generation
   build_runner: ^2.4.9
   riverpod_analyzer_utils: ^0.1.2
@@ -137,7 +137,7 @@ Güvenli ve hatasız bir çalışma için 4 aşamalı test planı uygulanır:
 
 ## 4. Dağıtım ve Dağıtım Süreçleri (CI/CD)
 
-Firebox, her işletim sistemine özgü yerel paket biçimlerinde dağıtılacaktır.
+Firedock, her işletim sistemine özgü yerel paket biçimlerinde dağıtılacaktır.
 
 ### CI/CD Boru Hattı (GitHub Actions)
 - Her `main` branch push işleminde ve yeni sürüm etiketinde (tag) otomatik derleme süreçleri tetiklenir.
